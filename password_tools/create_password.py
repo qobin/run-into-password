@@ -33,19 +33,25 @@ import hashlib
 
 
 def create_password(num, head=None):
-    list_password = []
-    i = 0
+    # list_password = []
+    # i = 0
+    # sql = "insert into camp('password', 'password_md5', 'password_sha256') value (%s, %s, %s)"
+    sql_file = open("F:\\camp\\4.sql", "w+")
     if 4 <= num < 12:
-        password_creator = Password(tup_total, head="1", num=num)
+        password_creator = Password(tup_total, num=num)
         md5_tools = hashlib.md5()
         sha256_tools = hashlib.sha256()
         while password_creator.has_next():
             password_str = password_creator.next_order_password()
             md5_tools.update(password_str)
             sha256_tools.update(password_str)
-            obj = PasswordObj(password_str, md5_tools.hexdigest(), sha256_tools.hexdigest())
-            list_password.append(obj)
-        return list_password
+            sql = "insert into camp('password', 'password_md5', 'password_sha256') value ('%s', '%s', '%s')" % (password_str, md5_tools.hexdigest(), sha256_tools.hexdigest())
+            sql_file.write(sql + "\n")
+        #     obj = PasswordObj(password_str, md5_tools.hexdigest(), sha256_tools.hexdigest())
+        #     list_password.append(obj)
+        #     if len(list_password) == 100:
+        #         break
+        # return list_password
             # if i < 10:
             #     list_password.append(obj)
             # else:
@@ -53,9 +59,11 @@ def create_password(num, head=None):
             #     list_password.clear()
             #     list_password.append(obj)
             # print list_password
+    sql_file.close()
+    print "well done"
 
 
 if __name__ == "__main__":
-    list_total = create_password(num=4)
-    for obj in list_total:
-        print obj
+    create_password(num=4)
+    # for obj in list_total:
+    #     print len(obj.password), len(obj.password_md5), len(obj.password_sha)
