@@ -32,21 +32,24 @@ from password_tools.password_clock import Password
 import hashlib
 
 
-def create_password(num, head=None):
+def create_password_file(num, head=None):
     # list_password = []
     # i = 0
-    # sql = "insert into camp('password', 'password_md5', 'password_sha256') value (%s, %s, %s)"
+    # sql =
     sql_file = open("F:\\camp\\4.sql", "w+")
+    # sql = "insert into camp('password', 'password_md5') value "
+    # sql_file.write(sql + "\n")
     if 4 <= num < 12:
         password_creator = Password(tup_total, num=num)
         md5_tools = hashlib.md5()
-        sha256_tools = hashlib.sha256()
+        # sha256_tools = hashlib.sha256()
         while password_creator.has_next():
             password_str = password_creator.next_order_password()
             md5_tools.update(password_str)
-            sha256_tools.update(password_str)
-            sql = "insert into camp('password', 'password_md5', 'password_sha256') value ('%s', '%s', '%s')" % (password_str, md5_tools.hexdigest(), sha256_tools.hexdigest())
+            # sha256_tools.update(password_str)
+            sql = "insert into camp('password', 'password_md5') value ('%s', '%s')" % (password_str, md5_tools.hexdigest())
             sql_file.write(sql + "\n")
+
         #     obj = PasswordObj(password_str, md5_tools.hexdigest(), sha256_tools.hexdigest())
         #     list_password.append(obj)
         #     if len(list_password) == 100:
@@ -63,7 +66,31 @@ def create_password(num, head=None):
     print "well done"
 
 
+import MySQLdb
+def create_password_db(num, head=None):
+    mysqldb = MySQLdb.connect(host='127.0.0.1', user='modesty', passwd='x3cKKpTiLa2Dprkj', db='modesty')
+    cursor = mysqldb.cursor()
+    i = 0
+    if 4 <= num < 12:
+        password_creator = Password(tup_total, num=num)
+        md5_tools = hashlib.md5()
+        # sha256_tools = hashlib.sha256()
+        mysqldb.begin()
+        while password_creator.has_next():
+            i += 1
+            password_str = password_creator.next_order_password()
+            md5_tools.update(password_str)
+            sql = "insert into camp(password, password_md5) value (\"%s\", \"%s\");" % (password_str, md5_tools.hexdigest())
+            cursor.execute(sql)
+            if i == 1000:
+                mysqldb.commit()
+                i = 0
+                mysqldb.begin()
+    mysqldb.commit()
+    mysqldb.close()
+
+
 if __name__ == "__main__":
-    create_password(num=4)
+    create_password_db(num=4)
     # for obj in list_total:
     #     print len(obj.password), len(obj.password_md5), len(obj.password_sha)
