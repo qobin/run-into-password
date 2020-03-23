@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import logging
+import create_password
 
 
 # 密码生成器
@@ -82,8 +83,6 @@ class Password:
                 return True
         return False
 
-
-import create_password
 
 if __name__ == "__main__":
     password = Password(create_password.tup_total, head="a", num=6)
